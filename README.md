@@ -29,3 +29,13 @@ make uninstall
 Trino connected to MongoDB and MySQL inside private network. Instantiation using Terraform.
 
 ![infra](img/infra.png)
+
+# Data model & segmentation
+
+## Data model
+
+![data model](img/datamodel.jpg)
+
+## Segmentation
+
+We choose to go save the most recent data (<10 days) on MongoDB and archive the remainings on MySQL.
