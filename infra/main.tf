@@ -20,7 +20,8 @@ resource "docker_container" "mongodb" {
 
   env = [
     "MONGO_INITDB_ROOT_USERNAME=root",
-    "MONGO_INITDB_ROOT_PASSWORD=toto"
+    "MONGO_INITDB_ROOT_PASSWORD=toto",
+    "MONGO_INITDB_DATABASE=films"
   ]
 
   depends_on = [
