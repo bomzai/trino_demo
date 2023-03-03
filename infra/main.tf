@@ -44,11 +44,18 @@ resource "docker_container" "mysql" {
 
   env = [
     "MYSQL_ROOT_PASSWORD=root",
+    "MYSQL_DATABASE=films"
   ]
 
   depends_on = [
     docker_network.private_network
   ]
+
+  upload {
+    file   = "./docker-entrypoint-initdb.d/create_mysql_db.sql"
+    source = "../scripts/create_mysql_db.sql"
+  }
+
 }
 
 
