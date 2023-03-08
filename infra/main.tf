@@ -5,9 +5,23 @@ resource "docker_network" "private_network" {
   }
 }
 
+resource "docker_volume" "shared_volume_mongo" {
+  name = "shared_volume_mongo"
+}
+
+resource "docker_volume" "shared_volume_mysql" {
+  name = "shared_volume_mysql"
+}
+
 resource "docker_container" "mongodb" {
   name  = "mongodb"
-  image = "mongo:4.4.19-rc2"
+  image = docker_image.img_mongo.image_id
+
+  volumes {
+    container_path = "/data/export/mongodb"
+    volume_name = docker_volume.shared_volume_mongo.id
+  }
+
   networks_advanced {
     name         = "vnet"
     ipv4_address = "10.10.0.2"
@@ -31,7 +45,17 @@ resource "docker_container" "mongodb" {
 
 resource "docker_container" "mysql" {
   name  = "mysql"
-  image = "mysql:8.0-debian"
+  image = docker_image.img_mysql.image_id
+
+  volumes {
+    container_path = "/data/export/mysql"
+    volume_name = docker_volume.shared_volume_mysql.id
+  }
+
+  command = [ 
+    "--secure-file-priv=/data"
+  ]
+
   networks_advanced {
     name         = "vnet"
     ipv4_address = "10.10.0.3"
@@ -56,12 +80,16 @@ resource "docker_container" "mysql" {
     source = "../scripts/create_mysql_db.sql"
   }
 
+  upload {
+    file = "./docker-entrypoint-initdb.d/mysql_import.sh"
+    source = "../scripts/mysql_import.sh"
+  }
 }
 
 
 resource "docker_container" "trinodb" {
   name  = "trinodb"
-  image = "trinodb/trino:407"
+  image = docker_image.img_trino.image_id
   networks_advanced {
     name         = "vnet"
     ipv4_address = "10.10.0.4"
@@ -71,6 +99,7 @@ resource "docker_container" "trinodb" {
     internal = "8080"
     external = "8080"
   }
+
   upload {
     file   = "/etc/trino/catalog/mysql.properties"
     source = "connector/mysql.properties"
@@ -79,6 +108,63 @@ resource "docker_container" "trinodb" {
     file   = "/etc/trino/catalog/mongodb.properties"
     source = "connector/mongodb.properties"
   }
+
+  depends_on = [
+    docker_network.private_network
+  ]
+}
+
+resource "docker_container" "python" {
+  image = docker_image.img_python.image_id
+  name = "python"
+
+  volumes {
+    from_container = docker_container.mongodb.id
+    host_path = "/data/export/mongodb"
+  }
+
+  volumes {
+    from_container = docker_container.mysql.id
+    host_path = "/data/export/mysql"
+  }
+
+  networks_advanced {
+    name = "vnet"
+    ipv4_address = "10.10.0.5"
+  }
+
+  upload {
+    file = "zip_data.py"
+    source = "../scripts/zip_data.py"
+    executable = true
+  }
+
+  upload {
+    file = "requirements.txt"
+    source = "../scripts/requirements.txt"
+  }
+
+  upload {
+    file = "data/data_insert_time.tsv"
+    source = "../data/data_insert_time.tsv"
+  }
+
+  upload {
+    file = "data/title_basics_truncated.tsv"
+    source = "../data/title_basics_truncated.tsv"
+  }
+
+  upload {
+    file = "data/title_ratings_truncated.tsv"
+    source = "../data/title_ratings_truncated.tsv"
+  }
+
+  upload {
+    file = "start.sh"
+    source = "../scripts/start.sh"
+  }
+
+  command = [ "bash", "start.sh" ]
 
   depends_on = [
     docker_network.private_network
