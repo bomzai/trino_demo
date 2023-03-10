@@ -7,10 +7,22 @@ resource "docker_network" "private_network" {
 
 resource "docker_volume" "shared_volume_mongo" {
   name = "shared_volume_mongo"
+  driver = "local"
+  driver_opts = {
+    device = "${path.cwd}"
+    type = "tmpfs"
+    o = "rw"
+  }
 }
 
 resource "docker_volume" "shared_volume_mysql" {
   name = "shared_volume_mysql"
+  driver = "local"
+  driver_opts = {
+    device = path.cwd
+    type = "tmpfs"
+    o = "rw"
+  }
 }
 
 resource "docker_container" "mongodb" {
@@ -18,7 +30,7 @@ resource "docker_container" "mongodb" {
   image = docker_image.img_mongo.image_id
 
   volumes {
-    container_path = "/data/export/mongodb"
+    container_path = var.MONGODB_DATA_PATH
     volume_name = docker_volume.shared_volume_mongo.id
   }
 
@@ -28,15 +40,28 @@ resource "docker_container" "mongodb" {
   }
 
   ports {
-    internal = "27017"
-    external = "27017"
+    internal = var.MONGODB_PORT
+    external = var.MONGODB_PORT
   }
 
   env = [
-    "MONGO_INITDB_ROOT_USERNAME=root",
-    "MONGO_INITDB_ROOT_PASSWORD=toto",
-    "MONGO_INITDB_DATABASE=films"
+    "MONGO_INITDB_ROOT_USERNAME=${var.MONGODB_USER}",
+    "MONGO_INITDB_ROOT_PASSWORD=${var.MONGODB_PASSWORD}",
+    "MONGODB_USER=${var.MONGODB_USER}",
+    "MONGODB_PASSWORD=${var.MONGODB_PASSWORD}",
+    "MONGO_INITDB_DATABASE=${var.DATABASE}",
+    "MONGODB_ZIP_DATA_PATH=${var.MONGODB_ZIP_DATA_PATH}",
+    "MONGODB_DATA_PATH=${var.MONGODB_DATA_PATH}",
+    "PYTHON_MONGODB_EOF=${var.PYTHON_MONGODB_EOF}",
+    "BASICS_TABLE_FILE=${var.BASICS_TABLE_FILE_RECENT}",
+    "RATINGS_TABLE_FILE=${var.RATINGS_TABLE_FILE_RECENT}",
+    "DATES_TABLE_FILE=${var.DATES_TABLE_FILE_RECENT}",
   ]
+
+  upload {
+    file = "./docker-entrypoint-initdb.d/mongodb_import.sh"
+    source = "../scripts/mongodb_import.sh"
+  }
 
   depends_on = [
     docker_network.private_network
@@ -48,12 +73,12 @@ resource "docker_container" "mysql" {
   image = docker_image.img_mysql.image_id
 
   volumes {
-    container_path = "/data/export/mysql"
+    container_path = var.MYSQL_DATA_PATH
     volume_name = docker_volume.shared_volume_mysql.id
   }
 
   command = [ 
-    "--secure-file-priv=/data"
+    "--secure-file-priv=${var.MYSQL_DATA_PATH}"
   ]
 
   networks_advanced {
@@ -62,13 +87,26 @@ resource "docker_container" "mysql" {
   }
 
   ports {
-    internal = "3306"
-    external = "3306"
+    internal = var.MYSQL_PORT
+    external = var.MYSQL_PORT
   }
-
+  
   env = [
-    "MYSQL_ROOT_PASSWORD=root",
-    "MYSQL_DATABASE=films"
+    "MYSQL_ROOT_PASSWORD=${var.MYSQL_PASSWORD}",
+    "MYSQL_DATABASE=${var.DATABASE}",
+    "MYSQL_CUSTOM_USER=${var.MYSQL_CUSTOM_USER}",
+    "MYSQL_PASSWORD=${var.MYSQL_PASSWORD}",
+    "DATABASE=${var.DATABASE}",
+    "MYSQL_DATA_PATH=${var.MYSQL_DATA_PATH}",
+    "MYSQL_ZIP_DATA_PATH=${var.MYSQL_ZIP_DATA_PATH}",
+    "EXPORT_PATH=${var.EXPORT_PATH}",
+    "BASICS_TABLE=${var.BASICS_TABLE}",
+    "BASIC_TABLE_FILE=${var.BASICS_TABLE_FILE}",
+    "RATINGS_TABLE=${var.RATINGS_TABLE}",
+    "RATINGS_TABLE_FILE=${var.RATINGS_TABLE_FILE}",
+    "DATES_TABLE=${var.DATES_TABLE}",
+    "DATES_TABLE_FILE=${var.DATES_TABLE_FILE}",
+    "PYTHON_MYSQL_EOF=${var.PYTHON_MYSQL_EOF}"
   ]
 
   depends_on = [
@@ -120,12 +158,12 @@ resource "docker_container" "python" {
 
   volumes {
     from_container = docker_container.mongodb.id
-    host_path = "/data/export/mongodb"
+    host_path = var.MONGODB_DATA_PATH
   }
 
   volumes {
     from_container = docker_container.mysql.id
-    host_path = "/data/export/mysql"
+    host_path =var.MYSQL_DATA_PATH
   }
 
   networks_advanced {
@@ -145,17 +183,17 @@ resource "docker_container" "python" {
   }
 
   upload {
-    file = "data/data_insert_time.tsv"
+    file = "${var.EXPORT_PATH}/data_insert_time.tsv"
     source = "../data/data_insert_time.tsv"
   }
 
   upload {
-    file = "data/title_basics_truncated.tsv"
+    file = "${var.EXPORT_PATH}/title_basics_truncated.tsv"
     source = "../data/title_basics_truncated.tsv"
   }
 
   upload {
-    file = "data/title_ratings_truncated.tsv"
+    file = "${var.EXPORT_PATH}/title_ratings_truncated.tsv"
     source = "../data/title_ratings_truncated.tsv"
   }
 
@@ -165,6 +203,21 @@ resource "docker_container" "python" {
   }
 
   command = [ "bash", "start.sh" ]
+
+  env = [
+    "BASICS_TABLE_UNPROCESS_FILE=${var.BASICS_TABLE_UNPROCESS_FILE}",
+    "RATINGS_TABLE_UNPROCESS_FILE=${var.RATINGS_TABLE_UNPROCESS_FILE}",
+    "DATES_TABLE_UNPROCESS_FILE=${var.DATES_TABLE_UNPROCESS_FILE}",
+    "INSERTION_DATE=${var.INSERTION_DATE}",
+    "FILE_FORMAT=${var.FILE_FORMAT}",
+    "PYTHON_MYSQL_TEMP_FOLDER=${var.PYTHON_MYSQL_TEMP_FOLDER}",
+    "PYTHON_MONGODB_TEMP_FOLDER=${var.PYTHON_MONGODB_TEMP_FOLDER}",
+    "EXPORT_PATH=${var.EXPORT_PATH}",
+    "MYSQL_ZIP_DATA_PATH=${var.MYSQL_ZIP_DATA_PATH}",
+    "MONGODB_ZIP_DATA_PATH=${var.MONGODB_ZIP_DATA_PATH}",
+    "PYTHON_MYSQL_EOF=${var.PYTHON_MYSQL_EOF}",
+    "PYTHON_MONGODB_EOF=${var.PYTHON_MONGODB_EOF}",
+  ]
 
   depends_on = [
     docker_network.private_network
