@@ -10,7 +10,9 @@ plan:
 apply:
 	terraform apply -auto-approve
 
-install: init validate plan apply
+run: plan apply
+
+install: init validate
 
 uninstall:
 	terraform apply -destroy -auto-approve
