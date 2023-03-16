@@ -202,6 +202,11 @@ resource "docker_container" "python" {
     source = "../scripts/start.sh"
   }
 
+  upload {
+    file = "trino_queries.py"
+    source = "../scripts/trino_queries.py"
+  }
+
   command = [ "bash", "start.sh" ]
 
   env = [
