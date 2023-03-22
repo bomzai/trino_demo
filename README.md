@@ -34,7 +34,7 @@ Trino connected to MongoDB and MySQL inside private network. Instantiation using
 
 ## Data model
 
-![data model](img/datamodel.jpg)
+![data model](img/datamodel.png)
 
 ## Segmentation
 
