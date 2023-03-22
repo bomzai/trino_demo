@@ -223,3 +223,55 @@ resource "docker_container" "python" {
     docker_network.private_network
   ]
 }
+
+
+resource "docker_container" "python_trino" {
+  image = docker_image.img_python.image_id
+  name = "python_trino"
+
+  volumes {
+    from_container = docker_container.mongodb.id
+    host_path = var.MONGODB_DATA_PATH
+  }
+
+  volumes {
+    from_container = docker_container.mysql.id
+    host_path =var.MYSQL_DATA_PATH
+  }
+
+  networks_advanced {
+    name = "vnet"
+    ipv4_address = "10.10.0.6"
+  }
+
+  upload {
+    file = "trino_queries.py"
+    source = "../scripts/trino_queries.py"
+  }
+
+  upload {
+    file = "requirements.txt"
+    source = "../scripts/requirements.txt"
+  }
+
+  upload {
+    file = "trino_queries.sh"
+    source = "../scripts/trino_queries.sh"
+  }
+
+  command = [ "bash", "trino_queries.sh" ]
+
+  env = [
+    "EXPORT_PATH=${var.EXPORT_PATH}",
+    "PYTHON_MYSQL_EOF=${var.PYTHON_MYSQL_EOF}",
+    "PYTHON_MONGODB_EOF=${var.PYTHON_MONGODB_EOF}",
+    "TRINO_USER=${var.TRINO_USER}",
+    "TRINO_ADDRESS=${var.TRINO_ADDRESS}",
+    "TRINO_PORT=${var.TRINO_PORT}",
+  ]
+
+  depends_on = [
+    docker_network.private_network,
+    docker_container.python_trino
+  ]
+}

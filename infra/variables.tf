@@ -163,4 +163,17 @@ variable "INSERTION_DATE" {
     description = "MySQL archive data path"
 }
 
+variable "TRINO_PORT" {
+    type = number
+    description = "Trino port"
+}
 
+variable "TRINO_ADDRESS" {
+    type = string
+    description = "Trino address"
+}
+
+variable "TRINO_USER" {
+    type = string
+    description = "Trino user"
+}

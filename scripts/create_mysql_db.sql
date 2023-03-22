@@ -2,7 +2,7 @@ USE films;
 
 CREATE TABLE IF NOT EXISTS basics (
         tconst VARCHAR(12) NOT NULL, titleType VARCHAR(12), primaryTitle VARCHAR(200),
-        originalTitle VARCHAR(200), isAdult FLOAT, startYear INT,
+        originalTitle VARCHAR(200), isAdult BOOLEAN, startYear INT,
         endYear DATETIME, runtimeMinutes FLOAT, genres VARCHAR(50),
         PRIMARY KEY (tconst)
         );
