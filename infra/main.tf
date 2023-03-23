@@ -179,7 +179,7 @@ resource "docker_container" "python" {
 
   upload {
     file = "requirements.txt"
-    source = "../scripts/requirements.txt"
+    source = "../scripts/requirements_etl.txt"
   }
 
   upload {
@@ -251,7 +251,7 @@ resource "docker_container" "python_trino" {
 
   upload {
     file = "requirements.txt"
-    source = "../scripts/requirements.txt"
+    source = "../scripts/requirements_trino.txt"
   }
 
   upload {
