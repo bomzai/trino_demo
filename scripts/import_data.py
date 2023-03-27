@@ -1,14 +1,14 @@
 """Process tables and export it to MongoDB and MySQL with localhost and their open ports.
+This script should be run after the create_mysql_db.sql script
 Run the script with --db argument : 
     --db mongodb 
     --db mysql
 """
 
-from sqlalchemy import create_engine, text
-from sqlalchemy_utils import create_database, database_exists
-from pymongo import MongoClient
+from sqlalchemy import create_engine
 from os.path import join, abspath
 from zip_data import process_data
+from pymongo import MongoClient
 import argparse
 import time
 
@@ -46,7 +46,7 @@ def parse_database_args():
 
 
 def mysql_process(old_basics_table, old_ratings_table, old_titles_dates):
-    """Create database, tables (if not exists) and export tables to MySQL
+    """Export tables to MySQL
 
     Args:
         old_basics_table (pd.DataFrame): films data table older inserted
@@ -57,26 +57,8 @@ def mysql_process(old_basics_table, old_ratings_table, old_titles_dates):
     print("Processing mysql data...")
 
     engine = create_engine(MYSQL_URL)
-    if not database_exists(engine.url):
-        create_database(engine.url)
-        print(f"Connection to {MYSQL_ADDRESS}:{MYSQL_PORT} with user {MYSQL_USER} created !")
-        print(f"Database {DATABASE} created !")
     
     with engine.connect() as connection:
-        connection.execute(text(f"CREATE TABLE IF NOT EXISTS {BASICS} (\
-        tconst VARCHAR(12) NOT NULL, titleType VARCHAR(12), primaryTitle VARCHAR(50),\
-        originalTitle VARCHAR(50), isAdult FLOAT, startYear FLOAT,\
-        endYear DATETIME, runtimeMinutes FLOAT, genres BIGINT,\
-        PRIMARY KEY (tconst)\
-        );"))
-        connection.execute(text(f"CREATE TABLE IF NOT EXISTS {RATINGS} (\
-        tconst VARCHAR(12) NOT NULL, averageRating FLOAT, numVotes INT,\
-        PRIMARY KEY (tconst)\
-        );"))
-        connection.execute(text(f"CREATE TABLE IF NOT EXISTS {DATES} (\
-        tconst VARCHAR(12) NOT NULL, dataInsertTime DATE, PRIMARY KEY (tconst)\
-        );"))
-
         old_basics_table.to_sql(con=engine, name=BASICS, schema=DATABASE, index=False, if_exists="replace")
         old_ratings_table.to_sql(con=engine, name=RATINGS, schema=DATABASE, index=False, if_exists="replace")
         old_titles_dates.to_sql(con=engine, name=DATES, schema=DATABASE, index=False, if_exists="replace")
