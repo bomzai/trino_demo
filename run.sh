@@ -6,7 +6,7 @@ help() {
 
 export_env() {
     set -a
-    source .env
+    source .env_example
     set +a
 }
 
