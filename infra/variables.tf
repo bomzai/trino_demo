@@ -55,7 +55,7 @@ variable "EXPORT_PATH" {
 
 variable "MYSQL_ADDRESS" {
     type = string
-    description = "MySQL host"
+    description = "MySQL private IP adreess"
 }
 
 variable "MYSQL_PORT" {
@@ -90,7 +90,7 @@ variable "MYSQL_ZIP_DATA_PATH" {
 
 variable "MONGODB_ADDRESS" {
     type = string
-    description = "MySQL archive data path"
+    description = "MongoDB private IP adress"
 }
 
 variable "MONGODB_PORT" {
@@ -100,67 +100,67 @@ variable "MONGODB_PORT" {
 
 variable "MONGODB_USER" {
     type = string
-    description = "MySQL archive data path"
+    description = "MongoDB username"
 }
 
 variable "MONGODB_PASSWORD" {
     type = string
-    description = "MySQL archive data path"
+    description = "MongoDB password"
 }
 
 variable "MONGODB_DATA_PATH" {
     type = string
-    description = "MySQL archive data path"
+    description = "MongoDB data folder path"
 }
 
 variable "MONGODB_ZIP_DATA_PATH" {
     type = string
-    description = "MySQL archive data path"
+    description = "MongoDB archive data path"
 }
 
 variable "PYTHON_MYSQL_TEMP_FOLDER" {
     type = string
-    description = "MySQL archive data path"
+    description = "Python ETL temp data folder for MySQL"
 }
 
 variable "PYTHON_MONGODB_TEMP_FOLDER" {
     type = string
-    description = "MySQL archive data path"
+    description = "Python ETL temp data folder for MongoDB"
 }
 
 variable "PYTHON_MYSQL_EOF" {
     type = string
-    description = "MySQL archive data path"
+    description = "Python ETL EOF file name and path for MySQL. EOF is used to tell when the data transfer is done"
 }
 
 variable "PYTHON_MONGODB_EOF" {
     type = string
-    description = "MySQL archive data path"
+    description = "Python ETL EOF file name and path for MongoDB. EOF is used to tell when the data transfer is done"
 }
 
 variable "BASICS_TABLE_UNPROCESS_FILE" {
     type = string
-    description = "MySQL archive data path"
+    description = "Unprocess data for basics table"
 }
 
 variable "RATINGS_TABLE_UNPROCESS_FILE" {
     type = string
-    description = "MySQL archive data path"
+    description = "Unprocess data for ratings table"
 }
 
 variable "DATES_TABLE_UNPROCESS_FILE" {
     type = string
-    description = "MySQL archive data path"
+    description = "Unprocess data for dates table"
 }
 
 variable "FILE_FORMAT" {
     type = string
-    description = "MySQL archive data path"
+    description = "Format of the exported data"
 }
 
 variable "INSERTION_DATE" {
     type = string
-    description = "MySQL archive data path"
+    description = "Median date to use for splitting data between MySQL and MongoDB"
 }
 
 variable "TRINO_PORT" {
@@ -170,10 +170,10 @@ variable "TRINO_PORT" {
 
 variable "TRINO_ADDRESS" {
     type = string
-    description = "Trino address"
+    description = "Trino private IP adress"
 }
 
 variable "TRINO_USER" {
     type = string
-    description = "Trino user"
+    description = "Trino usernamee"
 }
