@@ -1,7 +1,7 @@
 resource "docker_network" "private_network" {
   name = "vnet"
   ipam_config {
-    subnet = "10.10.0.1/16"
+    subnet = var.SUBNET_MASK
   }
 }
 
@@ -36,7 +36,7 @@ resource "docker_container" "mongodb" {
 
   networks_advanced {
     name         = "vnet"
-    ipv4_address = "10.10.0.2"
+    ipv4_address = var.MONGODB_ADDRESS
   }
 
   ports {
@@ -83,7 +83,7 @@ resource "docker_container" "mysql" {
 
   networks_advanced {
     name         = "vnet"
-    ipv4_address = "10.10.0.3"
+    ipv4_address = var.MYSQL_ADDRESS
   }
 
   ports {
@@ -130,12 +130,12 @@ resource "docker_container" "trinodb" {
   image = docker_image.img_trino.image_id
   networks_advanced {
     name         = "vnet"
-    ipv4_address = "10.10.0.4"
+    ipv4_address = var.TRINO_ADDRESS
   }
 
   ports {
-    internal = "8080"
-    external = "8080"
+    internal = var.TRINO_PORT
+    external = var.TRINO_PORT
   }
 
   upload {
@@ -168,7 +168,7 @@ resource "docker_container" "python" {
 
   networks_advanced {
     name = "vnet"
-    ipv4_address = "10.10.0.5"
+    ipv4_address = var.PYTHON_ADDRESS
   }
 
   upload {
@@ -241,7 +241,7 @@ resource "docker_container" "python_trino" {
 
   networks_advanced {
     name = "vnet"
-    ipv4_address = "10.10.0.6"
+    ipv4_address = var.PYTHON_TRINO_ADDRESS
   }
 
   upload {
