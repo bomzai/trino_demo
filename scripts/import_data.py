@@ -22,9 +22,6 @@ MYSQL_URL = "mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_ADDRESS}/{DATA
             MYSQL_ADDRESS=os.environ["MYSQL_ADDRESS"],
             DATABASE=os.environ["DATABASE"])
 
-ROOT_PATH = abspath(join(__file__ , "../.."))
-
-
 def parse_database_args():
     """Return the database argument passed when running the script
     
