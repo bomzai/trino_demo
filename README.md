@@ -1,28 +1,31 @@
-# trino_demo
-Query engine demonstration with Trino
+# Trino Demo
+Query engine demonstration with Trino.
 
-# Infrastructure 
+# Run & Stop
 
-## Deploy infrastructre
-
-### Install
+## Requirements
 
 Make sure to have [terraform](https://developer.hashicorp.com/terraform/downloads?product_intent=terraform), make and [docker](https://www.docker.com) installed.
 
-Go to `infra` folder then type 
+## How to run
 
-```bash
-make install
+Go to the project root and type
+
+```
+./run.sh
 ```
 
-It will create 3 docker containers for each ressource. **You can acess Trino on your local machine via port `8080`.**
+It will deploy a test environnement inside docker. You can then access trino via `localhost:8080`.
 
-### Delete
+## How to delete
 
-In `infra` folder type
-```bash
-make uninstall
+To stop and delete your deployed environnement do
+
 ```
+./run.sh -d
+```
+
+# Infrastructure 
 
 ## Schema
 
@@ -30,12 +33,6 @@ Trino connected to MongoDB and MySQL inside private network. Instantiation using
 
 ![infra](img/infra.png)
 
-# Data model & segmentation
-
 ## Data model
 
 ![data model](img/datamodel.png)
-
-## Segmentation
-
-We choose to go save the most recent data (<10 days) on MongoDB and archive the remainings on MySQL.
