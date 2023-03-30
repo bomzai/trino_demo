@@ -177,3 +177,18 @@ variable "TRINO_USER" {
     type = string
     description = "Trino usernamee"
 }
+
+variable "SUBNET_MASK" {
+    type = string
+    description = "Masque de sous réseau"
+}
+
+variable "PYTHON_ADDRESS" {
+    type = string
+    description = "Python data injection container IP address"
+}
+
+variable "PYTHON_TRINO_ADDRESS" {
+    type = string
+    description = "Python trino container IP address"
+}
