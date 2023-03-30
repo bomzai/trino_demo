@@ -1,6 +1,7 @@
 """Run queries against Trino
 """
 from trino.dbapi import connect
+import time
 import os
 import json
 
@@ -12,15 +13,33 @@ def execute_queries(cur, queries):
         cur.fetchall()
         print(json.dumps(cur.stats, sort_keys=True, indent=4))
 
+def test_connection():
+    """
+    Wait for Trino server to accept queries
+
+    Returns:
+        trino.dbapi.Cursor : Trino connection
+    """
+    print("Waiting for trino server ...")
+    while True:
+        try:
+            conn = connect(
+            host=os.environ["TRINO_ADDRESS"],
+            port=os.environ["TRINO_PORT"],
+            user=os.environ["TRINO_USER"],
+            ) 
+            cur = conn.cursor()
+            res = cur.execute("SELECT COUNT(*) FROM mysql.films.basics, mongodb.films.basics").fetchall()
+            if res[0][0] > 1: # Test if the query has returned the count operation, should be > 1
+                print("Connection succeed !")
+                return cur
+            time.sleep(5)
+        except:
+            test_connection # If the query fails, call it again till it works
+
 if __name__ == "__main__":
 
-    conn = connect(
-        host=os.environ["TRINO_ADDRESS"],
-        port=os.environ["TRINO_PORT"],
-        user=os.environ["TRINO_USER"],
-    )
-
-    cur = conn.cursor()
+    cur = test_connection()
 
 # Since we don't have any common PK values in both columns, the result is empty
     QUERY1 = "SELECT r.numvotes, b.originaltitle\
