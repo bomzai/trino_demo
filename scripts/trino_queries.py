@@ -2,13 +2,15 @@
 """
 from trino.dbapi import connect
 import os
+import json
 
 def execute_queries(cur, queries):
 
     for query in queries:
+        print("Computing queires . . .")
         cur.execute(query)
         cur.fetchall()
-        print("Computing queires . . .")
+        print(json.dumps(cur.stats, sort_keys=True, indent=4))
 
 if __name__ == "__main__":
 
