@@ -11,8 +11,4 @@ echo "Waiting for data"
 while [ ! -f "${PYTHON_MYSQL_EOF}" ]; do sleep 1; done
 echo "Data ready on MySQL"
 
-# Wait for trino server to accept connection
-sleep 10
-echo "Sleep done"
-
 python trino_queries.py 
