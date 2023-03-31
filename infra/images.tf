@@ -1,6 +1,19 @@
 resource "docker_image" "img_python" {
-  name = "python:3.11.2"
+  name = "img_python"
   keep_locally = true
+  build {
+    context = "../scripts/zip"
+    dockerfile = "Dockerfile"
+  }
+}
+
+resource "docker_image" "img_python_trino" {
+  name = "img_python_trino"
+  keep_locally = true
+  build {
+    context = "../scripts/trino"
+    dockerfile = "Dockerfile"
+  }
 }
 
 resource "docker_image" "img_mysql" {

@@ -15,7 +15,7 @@ def random_dates(start : pd.Timestamp, end : pd.Timestamp, n : int, unit='D', se
         end (pd.Timestamp): End interval date.
         n (int): Number of dates to generate.
         unit (str, optional): Denotes the unit of the arg for numeric arg. Defaults to 'D'.
-        seed (_type_, optional): Random seed. Defaults to None.
+        seed (int, optional): Random seed. Defaults to None.
 
     Returns:
         pd.Series: Series of timestamp at format 'YYYY-MM-DD'.

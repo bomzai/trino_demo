@@ -1,7 +1,7 @@
 resource "docker_network" "private_network" {
   name = "vnet"
   ipam_config {
-    subnet = "10.10.0.1/16"
+    subnet = var.SUBNET_MASK
   }
 }
 
@@ -36,7 +36,7 @@ resource "docker_container" "mongodb" {
 
   networks_advanced {
     name         = "vnet"
-    ipv4_address = "10.10.0.2"
+    ipv4_address = var.MONGODB_ADDRESS
   }
 
   ports {
@@ -83,7 +83,7 @@ resource "docker_container" "mysql" {
 
   networks_advanced {
     name         = "vnet"
-    ipv4_address = "10.10.0.3"
+    ipv4_address = var.MYSQL_ADDRESS
   }
 
   ports {
@@ -130,12 +130,12 @@ resource "docker_container" "trinodb" {
   image = docker_image.img_trino.image_id
   networks_advanced {
     name         = "vnet"
-    ipv4_address = "10.10.0.4"
+    ipv4_address = var.TRINO_ADDRESS
   }
 
   ports {
-    internal = "8080"
-    external = "8080"
+    internal = var.TRINO_PORT
+    external = var.TRINO_PORT
   }
 
   upload {
@@ -152,7 +152,7 @@ resource "docker_container" "trinodb" {
   ]
 }
 
-resource "docker_container" "python" {
+resource "docker_container" "img_python" {
   image = docker_image.img_python.image_id
   name = "python"
 
@@ -168,18 +168,13 @@ resource "docker_container" "python" {
 
   networks_advanced {
     name = "vnet"
-    ipv4_address = "10.10.0.5"
+    ipv4_address = var.PYTHON_ADDRESS
   }
 
   upload {
     file = "zip_data.py"
-    source = "../scripts/zip_data.py"
+    source = "../scripts/zip/zip_data.py"
     executable = true
-  }
-
-  upload {
-    file = "requirements.txt"
-    source = "../scripts/requirements.txt"
   }
 
   upload {
@@ -197,12 +192,7 @@ resource "docker_container" "python" {
     source = "../data/title_ratings_truncated.tsv"
   }
 
-  upload {
-    file = "start.sh"
-    source = "../scripts/start.sh"
-  }
-
-  command = [ "bash", "start.sh" ]
+  command = [ "python3", "zip_data.py", "docker" ]
 
   env = [
     "BASICS_TABLE_UNPROCESS_FILE=${var.BASICS_TABLE_UNPROCESS_FILE}",
@@ -226,7 +216,7 @@ resource "docker_container" "python" {
 
 
 resource "docker_container" "python_trino" {
-  image = docker_image.img_python.image_id
+  image = docker_image.img_python_trino.image_id
   name = "python_trino"
 
   volumes {
@@ -241,25 +231,15 @@ resource "docker_container" "python_trino" {
 
   networks_advanced {
     name = "vnet"
-    ipv4_address = "10.10.0.6"
+    ipv4_address = var.PYTHON_TRINO_ADDRESS
   }
 
   upload {
     file = "trino_queries.py"
-    source = "../scripts/trino_queries.py"
+    source = "../scripts/trino/trino_queries.py"
   }
 
-  upload {
-    file = "requirements.txt"
-    source = "../scripts/requirements.txt"
-  }
-
-  upload {
-    file = "trino_queries.sh"
-    source = "../scripts/trino_queries.sh"
-  }
-
-  command = [ "bash", "trino_queries.sh" ]
+  command = [ "python3", "trino_queries.py" ]
 
   env = [
     "EXPORT_PATH=${var.EXPORT_PATH}",
