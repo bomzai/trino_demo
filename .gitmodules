@@ -1,0 +1,3 @@
+[submodule "scripts/general_scripts"]
+	path = scripts/general_scripts
+	url = https://github.com/bomzai/general_scripts.git
