@@ -2,7 +2,7 @@ resource "docker_image" "img_python" {
   name = "img_python"
   keep_locally = true
   build {
-    context = "../scripts/zip"
+    context = "../scripts/general_scripts/zip"
     dockerfile = "Dockerfile"
   }
 }
@@ -11,7 +11,7 @@ resource "docker_image" "img_python_trino" {
   name = "img_python_trino"
   keep_locally = true
   build {
-    context = "../scripts/trino"
+    context = "../scripts/general_scripts/trino"
     dockerfile = "Dockerfile"
   }
 }

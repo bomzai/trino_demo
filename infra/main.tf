@@ -60,7 +60,7 @@ resource "docker_container" "mongodb" {
 
   upload {
     file = "./docker-entrypoint-initdb.d/mongodb_import.sh"
-    source = "../scripts/mongodb_import.sh"
+    source = "../scripts/general_scripts/mongodb_import.sh"
   }
 
   depends_on = [
@@ -115,12 +115,12 @@ resource "docker_container" "mysql" {
 
   upload {
     file   = "./docker-entrypoint-initdb.d/create_mysql_db.sql"
-    source = "../scripts/create_mysql_db.sql"
+    source = "../scripts/general_scripts/create_mysql_db.sql"
   }
 
   upload {
     file = "./docker-entrypoint-initdb.d/mysql_import.sh"
-    source = "../scripts/mysql_import.sh"
+    source = "../scripts/general_scripts/mysql_import.sh"
   }
 }
 
@@ -173,7 +173,7 @@ resource "docker_container" "img_python" {
 
   upload {
     file = "zip_data.py"
-    source = "../scripts/zip/zip_data.py"
+    source = "../scripts/general_scripts/zip/zip_data.py"
     executable = true
   }
 
@@ -236,7 +236,7 @@ resource "docker_container" "python_trino" {
 
   upload {
     file = "trino_queries.py"
-    source = "../scripts/trino/trino_queries.py"
+    source = "../scripts/general_scripts/trino/trino_queries.py"
   }
 
   command = [ "python3", "trino_queries.py" ]
