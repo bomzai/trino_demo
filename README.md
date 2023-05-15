@@ -1,6 +1,19 @@
 # Trino Demo
 Query engine demonstration with Trino.
 
+# :bangbang: Clone the projet :bangbang:
+
+Use this command to clone this repo with all the submodules:
+
+`git clone --recursive https://github.com/bomzai trino_demo.git`
+
+Or if you have already cloned the project, you can use inside the *scripts/general_scripts* submodule:
+
+```
+git submodule init
+git submodule update
+```
+
 # Run & Stop
 
 ## Requirements
